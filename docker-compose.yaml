@@ -1,0 +1,9 @@
+services:
+  dummy.website:
+    container_name: dummy.website
+    build: .
+    ports:
+      - "${PORT:-8081}:${PORT:-8081}"
+    environment:
+      - PORT=${PORT:-8081}
+    restart: unless-stopped
