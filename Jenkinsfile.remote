@@ -19,7 +19,7 @@ pipeline {
                 sshPublisher(
                     publishers: [
                         sshPublisherDesc(
-                            configName: 'happydebt-server',
+                            configName: 'ii.dev.happydebt.kz',
                             transfers: [
                                 sshTransfer(
                                     execCommand: """
