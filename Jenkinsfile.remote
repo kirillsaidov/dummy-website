@@ -47,8 +47,8 @@ pipeline {
                                         fi
                                         
                                         echo "=== Deploying ==="
-                                        docker-compose down || true
-                                        docker-compose up -d --build
+                                        docker compose down || true
+                                        docker compose up -d --build
                                         
                                         echo "=== Deployment complete ==="
                                     """
