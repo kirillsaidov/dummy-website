@@ -23,10 +23,11 @@ pipeline {
                             transfers: [
                                 sshTransfer(
                                     execCommand: """
+                                        echo "=== Creating directory ==="
                                         mkdir -p ${REMOTE_DIR}
                                         cd ${REMOTE_DIR}
                                         
-                                        # Clone or pull latest code
+                                        echo "=== Pulling code ==="
                                         if [ -d ".git" ]; then
                                             git pull origin main
                                         else
@@ -35,16 +36,18 @@ pipeline {
                                             cd dummy-website
                                         fi
                                         
-                                        # Update PORT in .env if needed
+                                        echo "=== Update .env PORT ==="
                                         if [ -f .env ]; then
                                             sed -i 's/^PORT=.*/PORT=${PORT}/' .env
                                         else
                                             echo "PORT=${PORT}" > .env
                                         fi
                                         
-                                        # Deploy
+                                        echo "=== Deploying ==="
                                         docker-compose down || true
                                         docker-compose up -d --build
+                                        
+                                        echo "=== Deployment complete ==="
                                     """
                                 )
                             ]
