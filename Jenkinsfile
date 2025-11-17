@@ -64,7 +64,7 @@ pipeline {
     
     post {
         success {
-            echo "Deployment successful! Visit http://ii.dev.happydebt.kz:${PORT}"
+            echo "Deployment successful! Visit http://your.remote.server:${PORT}"
         }
         
         failure {
