@@ -1,0 +1,73 @@
+pipeline {
+    agent any
+
+    environment {
+        PORT = "${params.PORT ?: '8081'}"
+        REMOTE_DIR = '/home/prog/WORKFILES/dummy-website'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/kirillsaidov/dummy-website.git'
+            }
+        }
+        
+        stage('Deploy to Remote Server') {
+            steps {
+                sshPublisher(
+                    publishers: [
+                        sshPublisherDesc(
+                            configName: 'happydebt-server',
+                            transfers: [
+                                sshTransfer(
+                                    execCommand: """
+                                        mkdir -p ${REMOTE_DIR}
+                                        cd ${REMOTE_DIR}
+                                        
+                                        # Clone or pull latest code
+                                        if [ -d ".git" ]; then
+                                            git pull origin main
+                                        else
+                                            cd ../
+                                            git clone https://github.com/kirillsaidov/dummy-website.git
+                                            cd dummy-website
+                                        fi
+                                        
+                                        # Update PORT in .env if needed
+                                        if [ -f .env ]; then
+                                            sed -i 's/^PORT=.*/PORT=${PORT}/' .env
+                                        else
+                                            echo "PORT=${PORT}" > .env
+                                        fi
+                                        
+                                        # Deploy
+                                        docker-compose down || true
+                                        docker-compose up -d --build
+                                    """
+                                )
+                            ]
+                        )
+                    ]
+                )
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo "Deployment successful! Visit http://ii.dev.happydebt.kz:${PORT}"
+        }
+        
+        failure {
+            echo 'Deployment failed!'
+        }
+        
+        always {
+            cleanWs()
+        }
+    }
+}
+
+
