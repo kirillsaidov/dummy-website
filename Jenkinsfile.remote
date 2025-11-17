@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         PORT = "${params.PORT ?: '8081'}"
-        REMOTE_DIR = '/home/prog/WORKFILES/dummy-website'
+        REMOTE_DIR = "${params.REMOTE_DIR ?: '/home/prog/WORKFILES/dummy-website'}"
     }
 
     stages {
@@ -23,6 +23,9 @@ pipeline {
                             transfers: [
                                 sshTransfer(
                                     execCommand: """
+                                        #!/bin/bash
+                                        set -ex  # Exit on error and print commands
+
                                         echo "=== Creating directory ==="
                                         mkdir -p ${REMOTE_DIR}
                                         cd ${REMOTE_DIR}
@@ -50,7 +53,8 @@ pipeline {
                                         echo "=== Deployment complete ==="
                                     """
                                 )
-                            ]
+                            ],
+                            verbose: true
                         )
                     ]
                 )
